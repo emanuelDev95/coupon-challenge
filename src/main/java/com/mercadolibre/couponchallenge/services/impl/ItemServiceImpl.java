@@ -13,7 +13,10 @@ import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -43,7 +46,7 @@ public class ItemServiceImpl implements ItemService {
     private Mono<ItemsCouponResponse> getItemsOfCoupon(int amount, Flux<ItemResponse> items) {
         return items
                 .filter(item -> item.body().price() != null) // Filtra los elementos con precio no nulo
-                .collectMultimap(item -> item.body().id(), item -> item.body().price().intValue())
+                .collectMap(item -> item.body().id(), item -> item.body().price().intValue())
                 .flatMap(itemsMap -> {
                     if (itemsMap.isEmpty()) {
                         return Mono.error(new NotFoundException("Items not found"));
@@ -52,10 +55,11 @@ public class ItemServiceImpl implements ItemService {
                     AtomicInteger total = new AtomicInteger(0);
 
                     return Flux.fromIterable(itemsMap.entrySet())
-                            .flatMap(entry -> Flux.fromIterable(entry.getValue())
-                                    .takeWhile(price -> total.get() + price <= amount)
+                            .flatMap(entry -> Mono.just(entry.getValue())
+                                    .filter(price -> total.get() + price <= amount)
                                     .doOnNext(total::addAndGet)
-                                    .map(price -> entry.getKey()))
+                                    .map(price -> entry.getKey())
+                            )
                             .collectList()
                             .map(itemIds -> new ItemsCouponResponse(itemIds, total.get()));
                 });
