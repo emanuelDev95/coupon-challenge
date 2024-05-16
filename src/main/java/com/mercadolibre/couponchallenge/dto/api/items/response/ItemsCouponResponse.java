@@ -1,4 +1,4 @@
-package com.mercadolibre.couponchallenge.dto;
+package com.mercadolibre.couponchallenge.dto.api.items.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

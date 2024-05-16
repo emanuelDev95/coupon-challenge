@@ -1,84 +1,68 @@
 package com.mercadolibre.couponchallenge.services.impl;
 
 import com.mercadolibre.couponchallenge.clients.MercadoLibreItemsClient;
-import com.mercadolibre.couponchallenge.dto.ItemsCouponRequest;
-import com.mercadolibre.couponchallenge.dto.ItemsCouponResponse;
-import com.mercadolibre.couponchallenge.dto.mercadolibre.response.BodyItem;
-import com.mercadolibre.couponchallenge.dto.mercadolibre.response.ItemResponse;
+import com.mercadolibre.couponchallenge.dto.api.items.request.ItemsCouponRequest;
+import com.mercadolibre.couponchallenge.dto.api.items.response.ItemsCouponResponse;
+import com.mercadolibre.couponchallenge.dto.mercadolibre.response.item.ItemResponse;
+import com.mercadolibre.couponchallenge.exceptions.NotFoundException;
 import com.mercadolibre.couponchallenge.services.ItemService;
+import com.mercadolibre.couponchallenge.utils.HttpRequestUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 @RequiredArgsConstructor
 @Service
+@Validated
 public class ItemServiceImpl implements ItemService {
 
     private final MercadoLibreItemsClient mercadoLibreItemsClient;
 
-    private static final String BEARER = "Bearer ";
-    private static final String ID_ITEM = "id";
-    private static final String PRICE = "price";
-    private static final String COMMA= ",";
-
-
     @Override
     public Mono<ItemsCouponResponse> getItemsCoupon(final String token,
-                                                    final ItemsCouponRequest itemsCouponRequest) {
-        var idesRequest = String.join(COMMA, itemsCouponRequest.itemsIds());
-        var attributes = getAttributes();
+                                                     final ItemsCouponRequest itemsCouponRequest) {
+        var idesRequest = HttpRequestUtils.joinString(itemsCouponRequest.itemsIds(), HttpRequestUtils.COMMA);
+        var attributes = this.getAttributes();
         var items = getAllItems(token, idesRequest, attributes);
         return this.getItemsOfCoupon(itemsCouponRequest.amount(), items);
 
     }
 
-    private String getAttributes() {
-        return ID_ITEM + COMMA + PRICE;
-    }
-
-
-    private Flux<ItemResponse> getAllItems(String token, String ids, String attributes) {
-        var headers = getHeaders(token);
+    @Override
+    public Flux<ItemResponse> getAllItems(String token, String ids, String attributes) {
+        var headers = HttpRequestUtils.getHeaders(token);
         return mercadoLibreItemsClient.getItems(headers, ids, attributes);
 
-
     }
-
-    private Map<String, String> getHeaders(String token) {
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put(HttpHeaders.AUTHORIZATION, BEARER.concat(token));
-        return headers;
-    }
-
-
 
     public Mono<ItemsCouponResponse> getItemsOfCoupon(int amount, Flux<ItemResponse> items) {
-        Comparator<ItemResponse> idComparator = Comparator.comparing(item -> item.getBody().id());
-        return items.collectList().map(itemList -> {
-            AtomicInteger totalPrices = new AtomicInteger();
-            List<ItemResponse> filteredItems = itemList.stream()
-                    .sorted(idComparator)
-                    .filter(item -> item.getBody().price() <= amount)
-                    .filter(item -> {
-                        int currentTotal = totalPrices.addAndGet(item.getBody().price().intValue());
-                        return currentTotal <= amount;
-                    })
-                    .toList();
+        return items
+                .filter(item -> item.body().price() != null) // Filtra los elementos con precio no nulo
+                .collectMultimap(item -> item.body().id(), item -> item.body().price().intValue())
+                .flatMap(itemsMap -> {
+                    if (itemsMap.isEmpty()) {
+                        return Mono.error(new NotFoundException("Items not found"));
+                    }
 
-            int total = filteredItems.stream().mapToInt(item -> item.getBody().price().intValue()).sum();
-            List<String> itemIds = filteredItems.stream().map(item -> item.getBody().id()).sorted().toList();
-            return new ItemsCouponResponse(itemIds, total);
-        });
+                    AtomicInteger total = new AtomicInteger(0);
+
+                    return Flux.fromIterable(itemsMap.entrySet())
+                            .flatMap(entry -> Flux.fromIterable(entry.getValue())
+                                    .takeWhile(price -> total.get() + price <= amount)
+                                    .doOnNext(total::addAndGet)
+                                    .map(price -> entry.getKey()))
+                            .collectList()
+                            .map(itemIds -> new ItemsCouponResponse(itemIds, total.get()));
+                });
+    }
+
+    private  String getAttributes() {
+        return HttpRequestUtils.ID_ITEM + HttpRequestUtils.COMMA + HttpRequestUtils.PRICE;
     }
 
 
