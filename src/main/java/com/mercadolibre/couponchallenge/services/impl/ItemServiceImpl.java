@@ -40,7 +40,7 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    public Mono<ItemsCouponResponse> getItemsOfCoupon(int amount, Flux<ItemResponse> items) {
+    private Mono<ItemsCouponResponse> getItemsOfCoupon(int amount, Flux<ItemResponse> items) {
         return items
                 .filter(item -> item.body().price() != null) // Filtra los elementos con precio no nulo
                 .collectMultimap(item -> item.body().id(), item -> item.body().price().intValue())
