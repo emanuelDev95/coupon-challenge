@@ -8,9 +8,8 @@ server:
 
 app:
   api:
-    meli: https://api.mercadolibre.com
-    id: 6108866500380003
-    client-secret: bjAK91iRzT0ERGRi4nydLlB7Z6yPUVlX
+    url: https://api.mercadolibre.com
+
 
 
 

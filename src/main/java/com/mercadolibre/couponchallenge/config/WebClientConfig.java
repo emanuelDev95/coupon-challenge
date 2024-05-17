@@ -2,7 +2,7 @@ package com.mercadolibre.couponchallenge.config;
 
 import com.mercadolibre.couponchallenge.clients.MercadoLibreItemsClient;
 import com.mercadolibre.couponchallenge.clients.MercadoLibreReviewsClient;
-import com.mercadolibre.couponchallenge.config.properties.MercadoLibreConfig;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -14,9 +14,9 @@ public class WebClientConfig {
 
 
     @Bean
-    public WebClient webClient(MercadoLibreConfig mercadoLibreConfig) {
+    public WebClient webClient(@Value("${app.api.url}") String urlBase) {
         return WebClient.builder()
-                .baseUrl(mercadoLibreConfig.meli())
+                .baseUrl(urlBase)
                 .build();
     }
 
