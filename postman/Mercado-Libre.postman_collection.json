@@ -1,0 +1,336 @@
+{
+	"info": {
+		"_postman_id": "e0f368a8-d58c-4a01-946a-aeb6658b24db",
+		"name": "Mercado-Libre",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10195387",
+		"_collection_link": "https://winter-comet-989521.postman.co/workspace/escuela~be82dec0-93eb-4977-9c5b-de76b0e67bd2/collection/10195387-e0f368a8-d58c-4a01-946a-aeb6658b24db?action=share&source=collection_link&creator=10195387"
+	},
+	"item": [
+		{
+			"name": "items",
+			"item": [
+				{
+					"name": "one-item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.mercadolibre.com/items/MLA811601010",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mercadolibre",
+								"com"
+							],
+							"path": [
+								"items",
+								"MLA811601010"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getItems",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "APP_USR-6108866500380003-051516-3b3382054e94234dff6275141ec6a8ec-1595725864",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.mercadolibre.com/items?ids=MLA1412962259,MLA1145029073,MLA1394823556,MLA1398389871,MLA1277641650",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mercadolibre",
+								"com"
+							],
+							"path": [
+								"items"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "MLA1412962259,MLA1145029073,MLA1394823556,MLA1398389871,MLA1277641650"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getItemsAttributes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer APP_USR-6108866500380003-051517-2ab9b27481cda5b50763c5acf8f3c9c9-1595725864"
+							}
+						],
+						"url": {
+							"raw": "https://api.mercadolibre.com/items?ids=MLA1394823556, MLA1412962259,MLA1145029073,MLA1277641650,MLA1398389871&attributes=id,price,rate",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mercadolibre",
+								"com"
+							],
+							"path": [
+								"items"
+							],
+							"query": [
+								{
+									"key": "ids",
+									"value": "MLA1394823556, MLA1412962259,MLA1145029073,MLA1277641650,MLA1398389871"
+								},
+								{
+									"key": "attributes",
+									"value": "id,price,rate"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "getToken",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "accept",
+								"value": "application/json"
+							},
+							{
+								"key": "content-type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "authorization_code",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "6108866500380003",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "bjAK91iRzT0ERGRi4nydLlB7Z6yPUVlX",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "TG-664517215c1bb100014ebe15-1595725864",
+									"type": "text"
+								},
+								{
+									"key": "redirect_uri",
+									"value": "https://github.com/emanuelDev95",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.mercadolibre.com/oauth/token",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mercadolibre",
+								"com"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "challenge",
+			"item": [
+				{
+					"name": "local",
+					"item": [
+						{
+							"name": "stats",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						},
+						{
+							"name": "coupon",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "APP_USR-6108866500380003-051615-8a5a4afc5008001ddb5fafd42390ccaf-1595725864"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n \"items_ids\" : [\"MLA1412962259\",\"MLA1145029073\",\"MLA1394823556\",\"MLA1398389871\",\"MLA1277641650\"],\r\n \"amount\": 100000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8081/coupon",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8081",
+									"path": [
+										"coupon"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "aws",
+					"item": [
+						{
+							"name": "stats Copy",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "token",
+										"value": "APP_USR-6108866500380003-051622-a3817224ec5819ac95c9b15697fbc9c8-1595725864",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://18.231.13.6/coupon/stats?ids=MLA1412962259,MLA1145029073,MLA1394823556,MLA1398389871,MLA1277641650",
+									"protocol": "http",
+									"host": [
+										"18",
+										"231",
+										"13",
+										"6"
+									],
+									"path": [
+										"coupon",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "ids",
+											"value": "MLA1412962259,MLA1145029073,MLA1394823556,MLA1398389871,MLA1277641650"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "coupon Copy",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "token",
+										"value": "APP_USR-6108866500380003-051622-a3817224ec5819ac95c9b15697fbc9c8-1595725864"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n \"items_ids\" : [\"MLA1412962259\",\"MLA1145029073\",\"MLA1394823556\",\"MLA1398389871\",\"MLA1277641650\"],\r\n \"amount\": 100000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://18.231.13.6/coupon",
+									"protocol": "http",
+									"host": [
+										"18",
+										"231",
+										"13",
+										"6"
+									],
+									"path": [
+										"coupon"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "calificaciones",
+			"item": [
+				{
+					"name": "calificacionesByItem",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer APP_USR-6108866500380003-051611-2bf0ad5a3fb26b404de259cb4da47bdf-1595725864"
+							}
+						],
+						"url": {
+							"raw": "https://api.mercadolibre.com/reviews/item/MLA1145029073",
+							"protocol": "https",
+							"host": [
+								"api",
+								"mercadolibre",
+								"com"
+							],
+							"path": [
+								"reviews",
+								"item",
+								"MLA1145029073"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
