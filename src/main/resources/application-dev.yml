@@ -1,0 +1,6 @@
+app:
+  api:
+    url: https://api.mercadolibre.com
+
+
+

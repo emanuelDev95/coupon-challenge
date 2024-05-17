@@ -1,14 +1,10 @@
-spring:
-  application:
-    name: coupon-challenge
-
 server:
   port: 8081
-
-
-app:
-  api:
-    url: https://api.mercadolibre.com
+spring:
+  profiles:
+    active: prod
+  application:
+    name: coupon-challenge
 
 
 
